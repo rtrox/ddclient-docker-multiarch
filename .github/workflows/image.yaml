@@ -1,0 +1,52 @@
+name: build and push image
+
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+ 
+      - name: Prepare
+        id: prepare
+        run: |
+          DOCKER_IMAGE=swyytch/ddclient
+          DOCKER_PLATFORMS=linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x
+          TAGS="--tag ${DOCKER_IMAGE}:latest"
+          TAGS="$TAGS --tag ${DOCKER_IMAGE}:$(git rev-parse --short @:./ddclient)"
+          echo ::set-output name=docker_image::${DOCKER_IMAGE}
+          echo ::set-output name=buildx_args::--platform ${DOCKER_PLATFORMS} \
+            $TAGS --file ./Dockerfile ./
+      - name: install buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: latest
+          qemu-version: latest
+
+      - name: Docker Buildx (build)
+        run: |
+          docker buildx build --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }}
+      - name: Docker Login
+        if: success() && github.event_name != 'pull_request'
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+      - name: Docker Buildx (push)
+        if: success() && github.event_name != 'pull_request'
+        run: |
+          docker buildx build --output "type=image,push=true" ${{ steps.prepare.outputs.buildx_args }}
+      - name: Clear
+        if: always() && github.event_name != 'pull_request'
+        run: |
+          rm -f ${HOME}/.docker/config.json
