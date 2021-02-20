@@ -31,4 +31,4 @@ RUN rm -rf /ddclient
 
 VOLUME /defaults
 
-CMD ["/usr/bin/ddclient", "-daemon=0", "-noquiet", "--file", "/defaults/ddclient.conf"]
+CMD ["/usr/bin/ddclient", "-foreground", "--file", "/defaults/ddclient.conf"]
