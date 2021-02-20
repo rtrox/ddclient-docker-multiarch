@@ -1,5 +1,6 @@
 FROM alpine:3.13
 
+LABEL maintainer "Russell Troxel <russelltroxel@gmail.com>"
 
 RUN apk add --virtual=build-dependencies \
                       autoconf           \
@@ -31,4 +32,6 @@ RUN rm -rf /ddclient
 
 VOLUME /defaults
 
-CMD ["/usr/bin/ddclient", "-foreground", "--file", "/defaults/ddclient.conf"]
+ADD entrypoint.sh /entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD ["--daemon=3600", "--file", "/ddclient.conf"]
