@@ -9,3 +9,7 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    default_reviewers:
+      - rtrox
+    default_assignees:
+      - rtrox
