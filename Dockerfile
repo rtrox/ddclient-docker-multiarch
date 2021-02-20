@@ -29,6 +29,6 @@ RUN ./autogen && \
 RUN apk del --purge build-dependencies
 RUN rm -rf /ddclient
 
-VOLUME /config
+VOLUME /defaults
 
-CMD ["/usr/bin/ddclient", "-daemon=0", "-noquiet", "--file", "/ddclient.conf"]
+CMD ["/usr/bin/ddclient", "-daemon=0", "-noquiet", "--file", "/defaults/ddclient.conf"]
