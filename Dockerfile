@@ -8,6 +8,7 @@ RUN apk add --virtual=build-dependencies \
                       make               \
                       gcc
 RUN apk add --no-cache \
+        bash \
 	curl \
 	inotify-tools \
 	jq \
