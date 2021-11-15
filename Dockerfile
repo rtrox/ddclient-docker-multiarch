@@ -1,4 +1,4 @@
-FROM alpine:3.13
+FROM alpine:3.14.3
 
 LABEL maintainer "Russell Troxel <russelltroxel@gmail.com>"
 
